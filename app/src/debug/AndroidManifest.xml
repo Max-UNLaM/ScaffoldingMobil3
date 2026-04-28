@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug manifest that exposes HiltTestActivity for instrumented Compose tests.
+    HiltTestActivity is a minimal Activity provided by hilt-android-testing that
+    supports Hilt injection, so tests can call createAndroidComposeRule<HiltTestActivity>()
+    without needing to involve the real MainActivity.
+-->
+<manifest>
+    <application>
+        <activity
+            android:name="dagger.hilt.android.testing.HiltTestActivity"
+            android:exported="false" />
+    </application>
+</manifest>
