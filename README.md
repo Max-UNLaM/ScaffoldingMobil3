@@ -1,4 +1,4 @@
-g# Mobile Scaffolding
+# Mobile Scaffolding
 
 ## Index
 
@@ -190,6 +190,61 @@ Si quisieramos ir hacia la página "segundo" y pasarle un id, habría que llamar
 controller.navigate("segundo/1")
 
 Si queremos que un composable pueda navegar, deberá de recibir por parámetro un NavHostController.
+
+## Ejemplos incluidos en el proyecto
+
+El proyecto incluye tres pantallas y un conjunto de componentes que sirven como referencia de los
+patrones descritos en este documento.
+
+### Pantallas (screens)
+
+#### HomeScreen
+
+Pantalla de inicio. Muestra el componente `Greeting` con un mensaje de bienvenida.
+Utiliza `HomeViewModel`, que expone un `StateFlow<HomeUIState>` compuesto por `HelloMessageUIState`.
+El ViewModel inicializa el estado como `Loading` y lo resuelve de forma sincrónica a `Success("2b")`
+en el bloque `init`.
+
+```
+HomeScreen → HomeViewModel → HomeUIState { helloMessageState: HelloMessageUIState }
+```
+
+#### UserScreen
+
+Pantalla de usuario accedida via la ruta `user/{id}`. Demuestra:
+- Múltiples estados independientes en un mismo ViewModel (`userNameState` + `textListState`).
+- Carga asíncrona secuencial con `viewModelScope.launch` + `delay`.
+- El patrón de superficie de error: `textListState` fuerza un estado `Error` tras 4 segundos y
+  propaga la excepción vía el callback `onError: (Exception) -> Unit` hacia `MainActivity`,
+  que muestra un `Snackbar` de error.
+
+```
+UserScreen(onError) → UserViewModel → UserUIState { userNameState, textListState }
+```
+
+#### FormScreen
+
+Pantalla de formulario. Demuestra:
+- Uso de la nueva API `rememberTextFieldState()` de Compose (sin `remember { mutableStateOf }`)
+- Validación de formulario sin ViewModel: la función pura `validateForm(name, email)` devuelve un
+  `ValidationResult(isValid, message)`.
+- Comunicación directa con el `SnackbarHostState` recibido como parámetro para mostrar resultado
+  exitoso o error según el resultado de la validación.
+
+```
+FormScreen(snackbarHostState) → validateForm() → SnackbarVisualsWithError(isError = !)
+```
+
+### Componentes (components)
+
+| Componente | Descripción |
+|---|---|
+| `Greeting` | `Text` que muestra `"Hello $name!"`. Ejemplo mínimo de componente stateless. |
+| `TextList` | `LazyColumn` de `Card`s a partir de una `List<String>`. |
+| `BottomBar` | `NavigationBar` con tres ítems (Home, User, Form). Lee `currentBackStackEntry` para resaltar el ítem activo. |
+| `SnackbarVisualsWithError` | Implementa `SnackbarVisuals` con un flag `isError` que cambia label y estilo del botón en `MainActivity`. |
+
+---
 
 ## Data
 
