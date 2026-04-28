@@ -33,22 +33,36 @@ All commands use the Gradle wrapper. On Windows, use `gradlew.bat`; on Unix, use
 
 Single-module Android app (`ar.edu.unlam.mobile.scaffolding`) using Jetpack Compose + MVVM + Hilt.
 
+### Package layout
+
+```
+ui/
+  screens/   — Screen composables + ViewModels + UIState definitions (co-located)
+  components/ — Shared composables (BottomBar, TextList, SnackbarVisualsWithError, etc.)
+  theme/     — Color, Type, Theme
+```
+
 ### Navigation
 
-`MainActivity` owns the `NavHost` and a shared `SnackbarHostState`. Routes are string constants defined in their respective screen files (`HOME_SCREEN_ROUTE`, `FORM_ROUTE`). The `user/{id}` route passes a `String` navArgument.
+`MainActivity` owns the `NavHost` and a shared `SnackbarHostState`. Routes are string constants defined in their respective screen files (`HOME_SCREEN_ROUTE`, `FORM_ROUTE`). The `user/{id}` route passes a `String` navArgument. `BottomBar` reads `currentBackStackEntry` to track selected tab.
 
-### ViewModel → Screen contract
+### UIState composition pattern
 
-Each screen has a dedicated ViewModel and a sealed `UIState` hierarchy with three variants:
-- `Loading` — initial/pending state
-- `Success(data)` — holds the result
-- `Error(message)` — error payload surfaced via `onError: (Exception) -> Unit` callback on the screen
+Each screen defines per-component `@Immutable sealed interface XxxUIState` with `Loading`, `Success(data)`, and `Error(message)` variants, then wraps them in a top-level `data class XxxUIState(val componentState: XxxUIState, ...)`. ViewModels expose a single `StateFlow<TopLevelUIState>` and update it with `.copy()`.
 
-State is exposed as `StateFlow<XxxUIState>` and collected with `collectAsState()`. ViewModels are injected with `hiltViewModel()`.
+```kotlin
+// Pattern used in HomeViewModel and UserViewModel
+private val _uiState = MutableStateFlow(HomeUIState(helloMessage.value))
+val uiState = _uiState.asStateFlow()
+// Async update:
+viewModelScope.launch { delay(2000); _uiState.value = _uiState.value.copy(...) }
+```
 
 ### Error surface pattern
 
 Screens do **not** own a Snackbar. Instead, they accept `onError: (Exception) -> Unit` and call it on the `Error` branch. `MainActivity` holds the `SnackbarHostState` and launches coroutines to show `SnackbarVisualsWithError`, which carries an `isError: Boolean` flag to switch between error and success styling.
+
+**Exception:** `FormScreen` has no ViewModel and receives `SnackbarHostState` directly as a parameter — it handles validation inline and shows success/error snackbars itself.
 
 ### Dependency injection
 

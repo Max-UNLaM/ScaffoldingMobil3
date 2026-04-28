@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- HiltTestActivity lives in hilt-android-testing (debugImplementation).
+         Lint's class resolver doesn't see debug-scoped deps, so suppress the false positive. -->
+    <issue id="MissingClass">
+        <ignore regexp="dagger\.hilt\.android\.testing\.HiltTestActivity" />
+    </issue>
+</lint>

@@ -15,25 +15,37 @@ jobs:
           distribution: zulu
           java-version: 17
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
+
       - name: Generate kover coverage report
-        run: ./gradlew koverXmlReportRelease
+        run: ./gradlew koverXmlReportDebug
 
       - name: Add coverage report to PR
         id: kover
         uses: mi-kas/kover-report@v1
         with:
-          path: ${{ github.workspace }}/app/build/reports/kover/reportRelease.xml
+          path: ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Code Coverage
           update-comment: true
-          min-coverage-overall: 0
+          min-coverage-overall: 80
           min-coverage-changed-files: 0
           coverage-counter-type: LINE
+
+      - name: Enforce coverage threshold
+        run: |
+          python3 -c "
+          import sys
+          cov = float('${{ steps.kover.outputs.coverage-overall }}')
+          print(f'Overall coverage: {cov}%')
+          sys.exit(0 if cov >= 80 else 1)
+          "
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
-          files: app/build/reports/kover/reportRelease.xml
+          files: app/build/reports/kover/reportDebug.xml
