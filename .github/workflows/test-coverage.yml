@@ -33,6 +33,15 @@ jobs:
           min-coverage-changed-files: 0
           coverage-counter-type: LINE
 
+      - name: Enforce coverage threshold
+        run: |
+          python3 -c "
+          import sys
+          cov = float('${{ steps.kover.outputs.coverage-overall }}')
+          print(f'Overall coverage: {cov}%')
+          sys.exit(0 if cov >= 80 else 1)
+          "
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
