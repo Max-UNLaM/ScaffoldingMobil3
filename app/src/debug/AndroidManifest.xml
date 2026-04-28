@@ -5,7 +5,7 @@
     supports Hilt injection, so tests can call createAndroidComposeRule<HiltTestActivity>()
     without needing to involve the real MainActivity.
 -->
-<manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <activity
             android:name="dagger.hilt.android.testing.HiltTestActivity"
