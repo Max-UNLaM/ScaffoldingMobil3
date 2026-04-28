@@ -19,7 +19,6 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GreetingTest {
-
     // createComposeRule() sets up a minimal Compose host for the test.
     @get:Rule
     val composeTestRule = createComposeRule()

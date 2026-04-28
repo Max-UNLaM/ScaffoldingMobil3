@@ -27,7 +27,6 @@ import org.mockito.kotlin.whenever
  */
 @RunWith(AndroidJUnit4::class)
 class SnackbarVisualsWithErrorTest {
-
     // -------------------------------------------------------------------------
     // Scenario: error snackbar displays "Error" as the action label
     // -------------------------------------------------------------------------
@@ -96,8 +95,8 @@ class SnackbarVisualsWithErrorTest {
 
         val realVisuals = SnackbarVisualsWithError(message = "Real error", isError = true)
 
-        assertEquals("Custom", mockVisuals.actionLabel)   // returns what we told it to
-        assertEquals("Error", realVisuals.actionLabel)    // returns what the class dictates
+        assertEquals("Custom", mockVisuals.actionLabel) // returns what we told it to
+        assertEquals("Error", realVisuals.actionLabel) // returns what the class dictates
         assertNotEquals(mockVisuals.actionLabel, realVisuals.actionLabel)
     }
 }

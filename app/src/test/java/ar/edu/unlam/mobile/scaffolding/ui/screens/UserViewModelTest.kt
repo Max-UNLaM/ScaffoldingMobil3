@@ -24,7 +24,6 @@ import org.junit.Test
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class UserViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 

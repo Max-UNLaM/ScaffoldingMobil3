@@ -19,6 +19,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 /**
+ * Functional interface used as a Mockito-friendly wrapper around the [onError] lambda.
+ * Mockito cannot mock plain Kotlin function types (e.g. `(Exception) -> Unit`) directly,
+ * but it can mock single-abstract-method (SAM) interfaces.
+ */
+fun interface OnErrorCallback {
+    fun onError(exception: Exception)
+}
+
+/**
  * Instrumented Compose + Hilt tests for [UserScreen].
  *
  * WHY Hilt here?
@@ -41,20 +50,10 @@ import org.mockito.kotlin.verify
  *     - Use [ArgumentCaptor] to inspect the [Exception] that was passed.
  */
 
-/**
- * Functional interface used as a Mockito-friendly wrapper around the [onError] lambda.
- * Mockito cannot mock plain Kotlin function types (e.g. `(Exception) -> Unit`) directly,
- * but it can mock single-abstract-method (SAM) interfaces.
- */
-fun interface OnErrorCallback {
-    fun onError(exception: Exception)
-}
-
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class UserScreenTest {
-
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 

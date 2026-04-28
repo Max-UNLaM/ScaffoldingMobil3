@@ -21,7 +21,6 @@ import org.junit.Test
  * handles boundary inputs that are easy to miss.
  */
 class FormValidationTest {
-
     // -------------------------------------------------------------------------
     // Scenario: empty name is rejected
     // -------------------------------------------------------------------------
