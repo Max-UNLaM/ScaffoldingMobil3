@@ -18,6 +18,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
+      - name: Run unit tests
+        run: ./gradlew testReleaseUnitTest
+
       - name: Generate kover coverage report
         run: ./gradlew koverXmlReportRelease
 
